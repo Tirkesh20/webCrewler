@@ -4,28 +4,36 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Crawler implements Runnable {
     private String url;
     private String word;
-    private  final AtomicLong DEPTH= new AtomicLong(8L);
+    private String word2;
+    private String word3;
+    private String word4;
     private static final int MAX_PAGES_TO_SEARCH = 10000;
+    private final Collection<Result> resultNotSorted=Collections.synchronizedList(new LinkedList<>());
+    private final Collection<Result> resultSorted=Collections.synchronizedList(new LinkedList<>());
     private final Collection<String> pagesVisited =  Collections.synchronizedSet( new HashSet<>());
     private final  List<String> pagesToVisit = new LinkedList<>();
-    private AtomicLong counter= new AtomicLong(0);
-    public Crawler(String url,String word) {
+    public Crawler(String url,String word,String word2,String word3,String word4) {
        this.url=url;
         this.word=word;
+        this.word2=word2;
+        this.word3=word3;
+        this.word4=word4;
     }
-    public Crawler(){
+public Crawler(){
 
-    }
+}
     @Override
     public synchronized void run(){
-    search(this.url,this.word);
+    search(this.url,this.word,this.word2,this.word3,this.word4);
     }
 
-    public synchronized void search(String url, String searchWord) {
-        String baseUrl=url;
-        int sum=0;
+    public synchronized void search(String url, String word,String word2,String word3,String word4) {
+        Status status=new Status();
         LinkFinder linkFinder=new LinkFinder();
-        while (this.pagesVisited.size() < MAX_PAGES_TO_SEARCH) {
+        while (status.getStatus()) {
+            if (pagesVisited.size()==MAX_PAGES_TO_SEARCH){
+                return;
+            }
                 String currentUrl;
                 if (this.pagesToVisit.isEmpty()) {
                     currentUrl = url;
@@ -39,15 +47,18 @@ public class Crawler implements Runnable {
                 } catch (Exception e) {
                     continue;
                 }
-                long success = linkFinder.searchForWord(searchWord);
-                if (success > 0) {
-                    System.out.println(("**Success** Word " + " " + searchWord + "  found at" + "  " + currentUrl + " ---- " + success));
-                    sum += success;
-                }
-                this.pagesToVisit.addAll(linkFinder.getLinks());
-
+                long[] success = linkFinder.searchForWord(word,word2,word3,word4);
+                System.out.println(("**Success** Word " + " " +success[0]+" "+success[1]+" "+success[2]+" "+success[3]+" found at" + "  " + currentUrl + " ---- "));
+                Result result=new Result(success,currentUrl);
+            resultNotSorted.add(result);
+            this.pagesToVisit.addAll(linkFinder.getLinks());
+            System.out.println(status.getStatus());
+            System.out.println("\n**Done** Visited " + this.pagesVisited.size() + " web page(s)");
         }
-        System.out.println("\n**Done** Visited " + this.pagesVisited.size() + " web page(s)"+"sum"+sum);
+    }
+
+    public Collection getResultNotSorted(){
+        return this.resultNotSorted;
     }
 
     private synchronized String nextUrl() {

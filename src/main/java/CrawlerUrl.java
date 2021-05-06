@@ -14,7 +14,10 @@ public class CrawlerUrl {
     }
 
     public boolean isSubUrl (String url){
-        return url.contains(this.rootUrl);
+        String[] split = url.split("/");
+        String givenRoot = split.length > 1 ? split[1] : split[0];
+        boolean contains = url.contains(givenRoot);
+        return contains;
     }
 
     public boolean isCalled(String url){
@@ -37,4 +40,9 @@ public class CrawlerUrl {
     public int hashCode() {
         return Objects.hash(rootUrl);
     }
+
+    public List returnSubs(){
+      return this.subUrls;
+    }
 }
+

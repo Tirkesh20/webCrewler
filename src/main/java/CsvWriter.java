@@ -1,24 +1,34 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.*;
 
 public class CsvWriter {
-    public static void main(String[] args) {
-
+    public void toCsv(){
         try (PrintWriter writer = new PrintWriter("test.csv")) {
 
             StringBuilder sb = new StringBuilder();
-            sb.append("id");
-            sb.append(',');
+            Crawler crawler=new Crawler();
+            List notSorted= (List) crawler.getResultNotSorted();
+            sb.append(" not sorted");
             sb.append("url");
-            sb.append(" ,");
+            sb.append(" ,      ");
             sb.append("hits");
             sb.append('\n');
-            for( Integer i=1;i<100;i++) {
-                sb.append(i.toString());
+            Iterator iterator=notSorted.iterator();
+            while(iterator.hasNext()){
+                sb.append(iterator.next());
                 sb.append(',');
-                sb.append("Prashant Ghimire");
+
                 sb.append('\n');
+            }
+            List  sorted=new LinkedList();
+            sorted.addAll(notSorted);
+            Collections.sort(notSorted);
+            Iterator iterator1=sorted.iterator();
+            while(iterator1.hasNext()) {
+                sb.append("sorted");
+                sb.append(iterator1.next());
             }
             writer.write(sb.toString());
 
