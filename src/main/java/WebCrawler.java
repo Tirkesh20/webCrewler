@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
-class WebCrawler implements LinkHandler {
+class WebCrawler {
 
          private final Collection<String> visitedLinks = Collections.synchronizedSet(new HashSet<String>());
          private String url;
@@ -18,43 +18,23 @@ class WebCrawler implements LinkHandler {
 
          public WebCrawler(String startingURL,String word, int maxThreads) {
              this.url = startingURL;
-             mainPool = Executors.newFixedThreadPool(maxThreads);;
+             mainPool = Executors.newFixedThreadPool(maxThreads);
              this.word=word;
          }
 
-    private void startNewThread(String link,String word) throws Exception {
+         private void startNewThread(String link,String word){
         mainPool.execute(new Crawler(link, word));
-    }
-
-    @Override
-    public void queueLink(String link,String word) throws Exception {
-        startNewThread(link,word);
-    }
-
-        @Override
-         public int size() {
-             return visitedLinks.size();
-         }
-
-         @Override
-         public void addVisited(String s) {
-             visitedLinks.add(s);
-         }
+        }
 
 
-    private void  startCrawling() throws Exception {
+         private void  startCrawling(){
         startNewThread(this.url,this.word);
-    }
-    @Override
-         public boolean visited(String s) {
-             return visitedLinks.contains(s);
-         }
-
+        }
          /**
           * @param args the command line arguments
           */
          public static void main(String[] args) throws Exception {
-             new WebCrawler("http://www.pornhub.com","lolly_lips" ,2).startCrawling();
+             new WebCrawler("https://en.wikipedia.org","Musk" ,4).startCrawling();
          }
      }
 
