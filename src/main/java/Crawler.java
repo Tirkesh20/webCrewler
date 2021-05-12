@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -9,7 +10,6 @@ public class Crawler implements Runnable {
     private String word4;
     private static final int MAX_PAGES_TO_SEARCH = 10000;
     private final Collection<Result> resultNotSorted=Collections.synchronizedList(new LinkedList<>());
-    private final Collection<Result> resultSorted=Collections.synchronizedList(new LinkedList<>());
     private final Collection<String> pagesVisited =  Collections.synchronizedSet( new HashSet<>());
     private final  List<String> pagesToVisit = new LinkedList<>();
     public Crawler(String url,String word,String word2,String word3,String word4) {
@@ -24,15 +24,20 @@ public Crawler(){
 }
     @Override
     public synchronized void run(){
-    search(this.url,this.word,this.word2,this.word3,this.word4);
+        try {
+            search(this.url,this.word,this.word2,this.word3,this.word4);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public synchronized void search(String url, String word,String word2,String word3,String word4) {
+    public synchronized void search(String url, String word,String word2,String word3,String word4) throws IOException {
         Status status=new Status();
         LinkFinder linkFinder=new LinkFinder();
         while (status.getStatus()) {
-            if (pagesVisited.size()==MAX_PAGES_TO_SEARCH){
-                return;
+            if (pagesVisited.size()>=MAX_PAGES_TO_SEARCH){
+                status.setStatus(false);
+                break;
             }
                 String currentUrl;
                 if (this.pagesToVisit.isEmpty()) {
@@ -47,9 +52,8 @@ public Crawler(){
                 } catch (Exception e) {
                     continue;
                 }
-                long[] success = linkFinder.searchForWord(word,word2,word3,word4);
-                System.out.println(("**Success** Word " + " " +success[0]+" "+success[1]+" "+success[2]+" "+success[3]+" found at" + "  " + currentUrl + " ---- "));
-                Result result=new Result(success,currentUrl);
+                Result result = linkFinder.searchForWord(word,word2,word3,word4,url);
+                System.out.println(("**Success** Word " +result));
             resultNotSorted.add(result);
             this.pagesToVisit.addAll(linkFinder.getLinks());
             System.out.println(status.getStatus());

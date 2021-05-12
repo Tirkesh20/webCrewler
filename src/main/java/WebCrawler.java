@@ -1,12 +1,9 @@
 import java.util.*;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 
 class WebCrawler {
 
-         private final Collection<String> visitedLinks = Collections.synchronizedSet(new HashSet<String>());
          private String url;
          private ExecutorService mainPool;
          private String word;
@@ -38,16 +35,16 @@ class WebCrawler {
     private void  startCrawling(){
         startNewThread(this.url,this.word,this.word2,this.word3,this.word4);
         }
-         /**
-          * @param args the command line arguments
-          */
-         public static void main(String[] args) throws Exception {
-//             Scanner scanner=new Scanner(System.in);
-//             String url=scanner.nextLine();
-//             String word=scanner.nextLine();
-             new WebCrawler("https://en.wikipedia.org/wiki/Elon_Musk","Musk","Tesla","Gigafactory","Elon Mask" ,4).startCrawling();
+         public static void main(String[] args){
+             Scanner scanner=new Scanner(System.in);
+             String url=scanner.nextLine();
+             String word=scanner.nextLine();
+             String word2=scanner.nextLine();
+             String word3=scanner.nextLine();
+             String word4=scanner.nextLine();
+             new WebCrawler(url,word,word2,word3,word4 ,4).startCrawling();
          }
-     }
+    }
 
 
 

@@ -48,23 +48,23 @@ public class LinkFinder {
         }
 }
 
-    public synchronized long[] searchForWord(String searchWord,String word2,String word3,String word4) {
-        long[] res=new long[4];
+    public synchronized Result searchForWord(String searchWord,String word2,String word3,String word4,String url) {
+
         if(this.htmlDocument == null)
         {
             System.out.println("ERROR! Call crawl() before performing analysis on the document");
             return null;
         }
         String bodyText = this.htmlDocument.body().text();
-        Matcher matcher = Pattern.compile("\\b+"+searchWord+"\\b", Pattern.CASE_INSENSITIVE).matcher(bodyText);
+        Matcher matcher = Pattern.compile ( "\\b+"+searchWord+"\\b", Pattern.CASE_INSENSITIVE).matcher(bodyText);
         Matcher matcher2 = Pattern.compile("\\b+"+word2+"\\b", Pattern.CASE_INSENSITIVE).matcher(bodyText);
         Matcher matcher3 = Pattern.compile("\\b+"+word3+"\\b", Pattern.CASE_INSENSITIVE).matcher(bodyText);
         Matcher matcher4 = Pattern.compile("\\b+"+word4+"\\b", Pattern.CASE_INSENSITIVE).matcher(bodyText);
-            res[0] = matcher.results().count();
-        res[1]=matcher2.results().count();
-        res[2]=matcher3.results().count();
-        res[3]=matcher4.results().count();
-        return res;
+            long count = matcher.results().count();
+         long count1=matcher2.results().count();
+        long count2=matcher3.results().count();
+        long count3=matcher4.results().count();
+        return new Result(count,count1,count2,count3,url);
     }
     public synchronized Collection<String> getLinks()
     {

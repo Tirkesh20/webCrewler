@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -7,7 +8,7 @@ public class HttpUrlChecker {
     private final ReentrantLock lock = new ReentrantLock();
     private ConcurrentHashMap<CrawlerUrl, Long> urlsContainer = new ConcurrentHashMap<>();
     public final Status status=new Status();
-    public boolean shouldBeCalled(String url) {
+    public boolean shouldBeCalled(String url) throws IOException {
         try {
             lock.lock();
             if (ifAdd(url)) {
@@ -21,14 +22,13 @@ public class HttpUrlChecker {
     }
 
 
-    public boolean ifAdd(String url) {
+    public boolean ifAdd(String url) throws IOException {
         for (Map.Entry<CrawlerUrl, Long> m : urlsContainer.entrySet()) {
             CrawlerUrl key = m.getKey();
             if (m.getValue() == 8) {
                 status.setStatus(false);
             }
             if (key.isSubUrl(url) && !key.isCalled(url) && m.getValue() < 9) {
-
                 m.getKey().addUrl(url);
                 m.setValue(m.getValue() + 1);
                 return false;

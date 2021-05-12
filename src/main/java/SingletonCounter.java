@@ -11,7 +11,7 @@ public class SingletonCounter {
         counter = new AtomicLong(init);
     }
 
-    public static Long getIndex() { // #3
+    public static Long getIndex() {
         try {
             lock.lock();
             if (instance == null) {
